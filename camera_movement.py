@@ -15,6 +15,8 @@ orb = cv2.ORB_create(nfeatures=1000)
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
 
 # draw path on canvas, trajectory Visualization
+
+
 def draw(img, v):  # v -> vector (x, y, z)
     global SCALE, OFFSET
     traj = numpy.zeros((600, 600, 3), dtype=numpy.uint8)
@@ -74,32 +76,47 @@ while True:
         if j.distance < 0.75 * i.distance:
             t.append(j)
 
+    # essential matrix needs 8 points
+    if len(t) < 8:
+        continue
+
     # matching points
-    fr1 = [] # previous points
-    fr2 = [] # next pooints
+    fr1 = []  # previous points
+    fr2 = []  # next pooints
 
     for i in t:
-        fr1.append(point1[i.queryIdx].pt) # index of point1, .pt is x, y of point1
+        # index of point1, .pt is x, y of point1
+        fr1.append(point1[i.queryIdx].pt)
     pts1 = numpy.float32(fr1).reshape(-1, 1, 2)
 
     for j in t:
-        fr2.append(point2[j.trainIdx].pt) # index of point2
+        fr2.append(point2[j.trainIdx].pt)  # index of point2
     pts2 = numpy.float32(fr2).reshape(-1, 1, 2)
 
     print(pts1)
     print(pts2)
 
-  
+    # cv2.imshow("pose estimation",)
+    # cv2.imshow('trajectory', )
 
+    #  essential matrix and pose
+    E, mask = cv2.findEssentialMat(
+        pts2, pts1, K, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+    _, R, t_mat, mask = cv2.recoverPose(E, pts2, pts1, K)
 
-    #cv2.imshow("pose estimation",) 
-    #cv2.imshow('trajectory', )
+    # camera moving, updating pose
+    T_rel = numpy.hstack((R, t_mat))
+    T_rel = numpy.vstack((T_rel, numpy.array([0, 0, 0, 1])))
+    v = v @ T_rel
+
+    trajectory = draw(frame2, v)
+    cv2.imshow('trajectory', trajectory)
 
     frame1 = frame2
     point1 = point2
     description1 = description2
 
-    cv2.waitKey(1) 
+    cv2.waitKey(1)
 
 video.release()
 cv2.destroyAllWindows()
