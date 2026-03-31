@@ -1,7 +1,8 @@
 # SLAM -> Simultaneous Localization and Mapping
 
 ## NEEDS GUI features to see video or image
-- `sudo apt update` -> this is needed when in container
+needed if running in container and wsl
+- `sudo apt update` 
 - `sudo apt install -y libgl1 libglib2.0-0`
 - if `"Could not load the Qt platform plugin "xcb""` error 
   - use: `sudo apt-get install -y libxcb-xinerama0 libqt5gui5 libqt5widgets5 libqt5core5a libgl1-mesa-glx`
@@ -11,7 +12,7 @@
 ## TODO
 - feature extraction -> identify points in the image that are trackable -- **WORKS!**
 - feature matching -> try to find same points from previous frame to next frame -- **WORKS!**
-- camera_movement -> ...
+- camera_movement -> calculate how the camera rotate and move in 3d space to update its position -- **WORKS!**
 
 ### NOTES
 - cv2 (opencv) is computer vision library, contains over 2500 algorithms https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
