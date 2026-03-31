@@ -73,3 +73,42 @@ Tässä siirrytään kuvankäsittelystä geometriaan.
 ### 9. Päivityslogiikka
 *   **`gray_frame1 = gray_frame2`**:
     *   Siirtää nykyisen tiedon "vanhaksi" tiedoksi. Tämä mahdollistaa jatkuvan liikkeen seurannan ruudusta toiseen (ketjureaktio).
+
+
+
+### camera movement (muuttujat)
+
+- SCALE: Kerroin, jolla matemaattiset yksiköt (kuten metrit) muutetaan pikseleiksi piirtämistä varten.
+- OFFSET: Aloituspiste (x, y) mustalla kankaalla, jotta reitti ei ala suoraan yläkulmasta (0,0).
+
+- video: OpenCV:n VideoCapture-olio, joka vastaa MP4-tiedoston avaamisesta ja lukemisesta.
+- orb: Ominaisuuksien etsijä (ORB-algoritmi), jolla löydetään kuvasta "kiinnostavia" kohtia (kulmia/reunoja).
+- bf: Brute-Force Matcher -työkalu, joka vertailee ja yhdistää kahden eri kuvaruudun pisteet toisiinsa.
+
+- v: Globaali asentomatriisi (4x4). Se seuraa kameran tarkkaa sijaintia ja suuntaa maailmassa.
+- traj: "Trajectory" eli kulkureitti-kuva — musta pohja, johon kameran liikkeet piirretään.
+- focal: Kameran polttoväli (tässä simuloitu kuvan leveyden perusteella).
+- cp: "Center Point" eli kameran keskipiste, yleensä kuvan fyysinen keskikohta.
+
+- K: Kameran sisäinen matriisi (Intrinsic Matrix). Se määrittää linssin geometrian (polttoväli ja keskipiste).
+- ret: "Return"-lippu (True/False). Kertoo, onnistuiko videoruudun luku vai loppuiko video.
+- frame1 / frame2: Edellinen ja nykyinen videoruutu (värikuvat).
+- gray_frame1 / gray_frame2: Harmaasävyversiot kuvista (tarvitaan pisteiden tunnistukseen).
+
+- point1 / point2: ORB-algoritmin löytämien pisteiden (x, y) -koordinaatit kuvassa.
+- description1 / description2: Pisteiden "digitaaliset sormenjäljet", joiden avulla ne tunnistetaan eri ruuduissa.
+- matches: Lista mahdollisista yhteyksistä pisteiden välillä ruudusta 1 ruutuun 2.
+
+- t: Lista "hyvistä" vastinpisteistä, jotka ovat läpäisseet laaduntarkistuksen (Lowe's ratio test).
+- fr1 / fr2: Väliaikaiset listat vastinpisteiden koordinaattien keräämiseen.
+- pts1 / pts2: Lopulliset NumPy-taulukot pisteistä, joita käytetään matemaattisissa laskuissa.
+
+- E: Essential Matrix (Olennainen matriisi). Määrittää geometrisen suhteen kahden kameranäkymän välillä.
+- mask: Suodatin, joka erottaa oikeat havainnot (inliers) virheistä ja kohinasta.
+- R: Rotaatiomatriisi (3x3). Kertoo kuinka paljon kamera kääntyi tai kallistui ruutujen välillä.
+- t_mat: Translaatiovektori (3x1). Kertoo kuinka paljon kamera liikkui sivuille, ylös tai eteenpäin.
+
+- T_rel: Suhteellinen muutosmatriisi (4x4). Yhdistää R- ja t_mat-tiedot yhdeksi liike-askeleeksi.
+- v = v @ T_rel: Matriisikertolasku, joka lisää uusimman liikkeen (T_rel) kameran kokonaishistoriaan (v).
+
+
