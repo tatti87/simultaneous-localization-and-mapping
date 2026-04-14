@@ -19,7 +19,7 @@
         "vscode": {
             "extensions": [
                 "ms-python.python",       
-                "formulahendry.code-runner", 
+                "formulahendry.code-runner" 
                 // "ms-python.black-formatter" 
             ]
         }
